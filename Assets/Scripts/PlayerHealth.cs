@@ -12,7 +12,13 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (currentHealth <= 0f || damage <= 0f)
+            return;
+
         currentHealth = Mathf.Max(0f, currentHealth - damage);
+
+        if (GameAudio.Instance != null)
+            GameAudio.Instance.PlayPlayerHurt();
     }
 
     public void Heal(float amount)

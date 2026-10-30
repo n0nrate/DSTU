@@ -8,12 +8,8 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 2f;
     public float gravity = -20f;
 
-    public float attackRange = 2.5f;
-    public float attackDamage = 25f;
-
     private CharacterController controller;
     private float verticalVelocity;
-    private float nextAttackTime;
 
     void Start()
     {
@@ -49,27 +45,5 @@ public class PlayerMovement : MonoBehaviour
         velocity.y = verticalVelocity;
 
         controller.Move(velocity * Time.deltaTime);
-
-        if (Input.GetMouseButtonDown(0) && Time.time >= nextAttackTime)
-        {
-            Attack();
-            nextAttackTime = Time.time + 0.5f;
-        }
-    }
-
-    void Attack()
-    {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            attackRange
-        );
-
-        foreach (Collider hit in hits)
-        {
-            EnemyAI enemy = hit.GetComponent<EnemyAI>();
-
-            if (enemy != null)
-                enemy.TakeDamage(attackDamage);
-        }
     }
 }

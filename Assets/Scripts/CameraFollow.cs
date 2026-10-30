@@ -6,7 +6,11 @@ public class CameraFollow : MonoBehaviour
 
     public Vector3 offset = new Vector3(0f, 10f, -7f);
 
-    public float smoothSpeed = 5f;
+    [Header("Camera Smoothing")]
+    public float smoothTime = 0.35f;
+    public float rotationSpeed = 5f;
+
+    private Vector3 velocity = Vector3.zero;
 
     void LateUpdate()
     {
@@ -15,12 +19,25 @@ public class CameraFollow : MonoBehaviour
 
         Vector3 desiredPosition = target.position + offset;
 
-        transform.position = Vector3.Lerp(
+        transform.position = Vector3.SmoothDamp(
             transform.position,
             desiredPosition,
-            smoothSpeed * Time.deltaTime
+            ref velocity,
+            smoothTime
         );
 
-        transform.LookAt(target);
+        Vector3 direction = target.position - transform.position;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion desiredRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                desiredRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
     }
 }
