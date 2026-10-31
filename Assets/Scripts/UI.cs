@@ -1,72 +1,73 @@
+
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public class GameUI : MonoBehaviour
 {
+    [Header("Models")]
     public PlayerHealth playerHealth;
-
-    public Slider healthBar;
-    public TMP_Text healthText;
-    public TMP_Text enemiesText;
-    public TMP_Text resultText;
+    public PlayerEnergy playerEnergy;
     public WaveManager waveManager;
-    public TMP_Text waveText;
 
-    private bool gameFinished = false;
+    [Header("View")]
+    public GameUIView view;
+
+    private bool gameFinished;
 
     void Start()
     {
-        healthBar.maxValue = playerHealth.maxHealth;
-        resultText.gameObject.SetActive(false);
+        gameFinished = false;
+
+        view.HideResult();
+        RefreshUI();
     }
 
     void Update()
     {
-        healthBar.value = playerHealth.currentHealth;
+        RefreshUI();
 
-        healthText.text = "HP: " +
-            playerHealth.currentHealth.ToString("0") +
-            " / " +
-            playerHealth.maxHealth.ToString("0");
-
-        int enemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
-
-        enemiesText.text = "Враги: " + enemies;
-
-        if (!gameFinished)
-        {
-            if (playerHealth.IsDead())
-            {
-                FinishGame("ПОРАЖЕНИЕ");
-            }
-            else if (waveManager != null && waveManager.GameWon)
-            {
-                FinishGame("ПОБЕДА");
-            }
-
-        if (waveManager != null && waveText != null)
-        {
-           waveText.text = "Волна: " + waveManager.currentWave;
-        }
-        }
-    }
-
-    
-    void FinishGame(string message)
-    {
-        gameFinished = true;
-
-        resultText.gameObject.SetActive(true);
-        resultText.text = message;
+        if (gameFinished || playerHealth == null)
+            return;
 
         if (playerHealth.IsDead())
         {
-            resultText.color = new Color32(239, 68, 68, 255);
+            view.ShowResult(false);
+            gameFinished = true;
         }
-        else
+        else if (waveManager != null &&
+                 waveManager.GameWon)
         {
-            resultText.color = new Color32(34, 197, 94, 255);
+            view.ShowResult(true);
+            gameFinished = true;
+        }
+    }
+
+    void RefreshUI()
+    {
+        if (view == null)
+            return;
+
+        if (playerHealth != null)
+        {
+            view.SetHealth(
+                playerHealth.currentHealth,
+                playerHealth.maxHealth
+            );
+        }
+
+        if (waveManager != null)
+        {
+            view.SetEnemies(waveManager.enemiesAlive);
+            view.SetWave(waveManager.currentWave);
+        }
+
+        if (playerEnergy != null)
+        {
+            view.SetEnergy(
+                playerEnergy.currentEnergy,
+                playerEnergy.maxEnergy,
+                playerEnergy.activationCost,
+                playerEnergy.IsBoostActive
+            );
         }
     }
 }

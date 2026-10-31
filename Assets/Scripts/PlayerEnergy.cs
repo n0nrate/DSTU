@@ -1,15 +1,15 @@
 using System.Collections;
 using UnityEngine;
-using TMPro;
 
 public class PlayerEnergy : MonoBehaviour
 {
+    [Header("Energy")]
     public int maxEnergy = 100;
     public int currentEnergy = 0;
     public int activationCost = 100;
-    public float boostDuration = 10f;
 
-    public TMP_Text energyText;
+    [Header("Boost")]
+    public float boostDuration = 10f;
 
     public bool IsBoostActive { get; private set; }
 
@@ -19,7 +19,6 @@ public class PlayerEnergy : MonoBehaviour
     void Start()
     {
         playerHealth = GetComponent<PlayerHealth>();
-        UpdateUI();
     }
 
     void Update()
@@ -44,8 +43,6 @@ public class PlayerEnergy : MonoBehaviour
             currentEnergy + amount,
             maxEnergy
         );
-
-        UpdateUI();
     }
 
     void ActivateBoost()
@@ -53,7 +50,6 @@ public class PlayerEnergy : MonoBehaviour
         currentEnergy -= activationCost;
         IsBoostActive = true;
 
-        UpdateUI();
         boostCoroutine = StartCoroutine(BoostTimer());
     }
 
@@ -63,20 +59,5 @@ public class PlayerEnergy : MonoBehaviour
 
         IsBoostActive = false;
         boostCoroutine = null;
-        UpdateUI();
-    }
-
-    void UpdateUI()
-    {
-        if (energyText == null)
-            return;
-
-        if (IsBoostActive)
-            energyText.text = "РИКОШЕТ АКТИВЕН!";
-        else if (currentEnergy >= activationCost)
-            energyText.text = "Энергия: 100/100 [E]";
-        else
-            energyText.text = "Энергия: " +
-                currentEnergy + "/" + maxEnergy;
     }
 }

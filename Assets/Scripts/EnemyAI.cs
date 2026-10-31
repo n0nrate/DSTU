@@ -96,7 +96,6 @@ public class EnemyAI : MonoBehaviour
 
         float distance = direction.magnitude;
 
-        // Проверяем препятствие между врагом и игроком.
         Vector3 origin = transform.position + Vector3.up * 0.5f;
         Vector3 target = player.position + Vector3.up * 0.5f;
 
